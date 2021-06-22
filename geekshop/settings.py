@@ -134,3 +134,5 @@ MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'authapp.ShopUser'
 
 LOGIN_URL = '/auth/login/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
