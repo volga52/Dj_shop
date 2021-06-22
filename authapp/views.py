@@ -6,6 +6,8 @@ from django.contrib import auth
 from django.urls import reverse
 
 from authapp.forms import ShopUserEditForm
+from authapp.models import ShopUser
+
 
 def login(request):
     title = 'вход'
@@ -82,5 +84,13 @@ def send_verify_link(user):
     message = f'Your link for account activation: {settings.DOMAIN_NAME}{verify_link}'
     return send_mail(subject, message,settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
 
+
 def verify(request, email, key):
-    pass
+    user = ShopUser.objects.filter(email=email).first()
+    if user and user.activation_key == key and not user.is_activation_key_expired():
+        user.is_active = True
+        user.activation_key = ''
+        user.activation_key_created = None
+        user.save()
+        auth.login(request, user)
+    return render(request, 'authapp/verify.html')
