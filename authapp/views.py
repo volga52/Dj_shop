@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.shortcuts import render, HttpResponseRedirect
 from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm
 from django.contrib import auth
@@ -47,7 +49,8 @@ def register(request):
         register_form = ShopUserRegisterForm(request.POST, request.FILES)
     
         if register_form.is_valid():
-            register_form.save()
+            user = register_form.save()
+            send_verify_link(user)
             return HttpResponseRedirect(reverse('auth:login'))
     else:
         register_form = ShopUserRegisterForm()
@@ -71,3 +74,13 @@ def edit(request):
     content = {'title': title, 'edit_form': edit_form}
     
     return render(request, 'authapp/edit.html', content)
+
+
+def send_verify_link(user):
+    verify_link = reverse('auth:verify', args=[user.email, user.activation_key])
+    subject = 'Account verify'
+    message = f'Your link for account activation: {settings.DOMAIN_NAME}{verify_link}'
+    return send_mail(subject, message,settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
+def verify(request, email, key):
+    pass
