@@ -5,7 +5,7 @@ from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm
 from django.contrib import auth
 from django.urls import reverse
 
-from authapp.forms import ShopUserEditForm
+from authapp.forms import ShopUserEditForm, ShopUserProfileEditForm
 from authapp.models import ShopUser
 
 
@@ -67,13 +67,15 @@ def edit(request):
     
     if request.method == 'POST':
         edit_form = ShopUserEditForm(request.POST, request.FILES, instance=request.user)
-        if edit_form.is_valid():
+        profile_form = ShopUserProfileEditForm(request.POST,instance=request.user.shopuserprofile)
+        if edit_form.is_valid() and profile_form.is_valid():
             edit_form.save()
             return HttpResponseRedirect(reverse('auth:edit'))
     else:
         edit_form = ShopUserEditForm(instance=request.user)
+        profile_form = ShopUserProfileEditForm(instance=request.user.shopuserprofile)
     
-    content = {'title': title, 'edit_form': edit_form}
+    content = {'title': title, 'edit_form': edit_form, 'profile_form': profile_form}
     
     return render(request, 'authapp/edit.html', content)
 
