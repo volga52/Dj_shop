@@ -10,10 +10,10 @@ from authapp.models import ShopUserProfile
 
 
 def save_user_profile(backend, user, response, *args, **kwargs):
-    if backend != 'vk-oauth2':
+    if backend.name != 'vk-oauth2':
         return
 
-    api_url = f"http://api.vk.com/method/users.get?fields=bdate,sex,about&access_token={response['access_token']}"
+    api_url = f"http://api.vk.com/method/users.get?fields=bdate,sex,about&v=5.131&access_token={response['access_token']}"
 
     vk_response = requests.get(api_url)
 
