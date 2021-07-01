@@ -41,6 +41,14 @@ class Order(models.Model):
         _totalcost = sum(list(map(lambda x: x.get_product_cost(), _items)))
         return _totalcost
 
+    def delete(self):
+        for item in self.orderitems.select_related():
+            item.product.quantity += item.quantity
+            item.product.save()
+
+        self.is_active = False
+        self.save()
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='orderitems')
