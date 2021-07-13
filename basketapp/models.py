@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from mainapp.models import Product
 
+
 class Basket(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -32,3 +33,7 @@ class Basket(models.Model):
         return _totalcost
         
     total_cost = property(_get_total_cost)
+
+    @staticmethod
+    def get_item(pk):
+        return Basket.objects.get(pk=pk)
