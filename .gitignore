@@ -1,5 +1,10 @@
 .idea
+*.pyc
 __pycache__/
 #db.sqlite3
-#media
+#media/
 .env
+venv
+env
+*.log
+.vscode/
