@@ -5,6 +5,8 @@ chardet==4.0.0
 cryptography==3.4.7
 defusedxml==0.7.1
 Django==3.2
+django-debug-toolbar==3.2.1
+django-debug-toolbar-template-profiler==2.0.2
 form==0.0.1
 idna==2.10
 oauthlib==3.1.1
@@ -21,3 +23,4 @@ social-auth-app-django==4.0.0
 social-auth-core==4.1.0
 sqlparse==0.4.1
 urllib3==1.26.5
+wrapt==1.12.1
