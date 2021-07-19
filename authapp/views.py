@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.shortcuts import render, HttpResponseRedirect
 from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm
@@ -63,7 +62,6 @@ def register(request):
     return render(request, 'authapp/register.html', content)
     
     
-@login_required
 def edit(request):
     title = 'редактирование'
     
