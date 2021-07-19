@@ -1,8 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from django.dispatch import receiver
@@ -20,11 +22,19 @@ class OrderList(ListView):
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user, is_active=True)
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ListView, self).dispatch(*args, **kwargs)
+
 
 class OrderCreate(CreateView):
     model = Order
     success_url = reverse_lazy('order:list')
     fields = []
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CreateView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -73,6 +83,10 @@ class OrderUpdate(UpdateView):
     success_url = reverse_lazy('order:list')
     fields = []
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(UpdateView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemEditForm, extra=1)
@@ -111,6 +125,10 @@ class OrderDelete(DeleteView):
 
 class OrderRead(DetailView):
     model = Order
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DetailView, self).dispatch(*args, **kwargs)
 
 
 def forming_complete(request, pk):
