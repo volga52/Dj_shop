@@ -1,12 +1,27 @@
+
 import datetime, random, os, json
 from django.shortcuts import render, get_object_or_404
 from mainapp.models import ProductCategory, Product
 # from basketapp.models import Basket
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.cache import cache
+from django.conf import settings
 
 
 JSON_PATH = 'mainapp/json'
+
+
+def get_links_menu():
+    if settings.LOW_CACHE:
+        key = 'links_menu'
+        links_menu = cache.get(key)
+        if links_menu is None:
+            links_menu = ProductCategory.objects.filter(is_active=True)
+            cache.set(key, links_menu)
+        return links_menu
+    else:
+        return ProductCategory.objects.filter(is_active=True)
 
 
 def load_from_json(file_name):
@@ -48,7 +63,7 @@ def main(request):
 
 def products(request, pk=None, page=1):   
     title = 'продукты'
-    links_menu = ProductCategory.objects.filter(is_active=True)
+    # links_menu = ProductCategory.objects.filter(is_active=True)
     # basket = get_basket(request.user)
            
     if pk:
@@ -72,7 +87,7 @@ def products(request, pk=None, page=1):
         
         content = {
             'title': title,
-            'links_menu': links_menu,
+            'links_menu': get_links_menu(),
             'category': category,
             'products': products_paginator,
             # 'basket': basket,
@@ -85,7 +100,7 @@ def products(request, pk=None, page=1):
     
     content = {
         'title': title,
-        'links_menu': links_menu, 
+        'links_menu': get_links_menu(),
         'hot_product': hot_product,
         'same_products': same_products,
         # 'basket': basket,
@@ -96,13 +111,13 @@ def products(request, pk=None, page=1):
     
 def product(request, pk):
     title = 'продукты'
-    links_menu = ProductCategory.objects.filter(is_active=True)
+    # links_menu = ProductCategory.objects.filter(is_active=True)
 
     product = get_object_or_404(Product, pk=pk)
     
     content = {
         'title': title, 
-        'links_menu': links_menu, 
+        'links_menu': get_links_menu(),
         'product': product, 
         # 'basket': get_basket(request.user),
     }
