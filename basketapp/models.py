@@ -19,7 +19,8 @@ class Basket(models.Model):
     
     @cached_property
     def get_items_cached(self):
-        return self.user.basket.select_related()
+        # return self.user.basket.select_related()
+        return Basket.objects.filter(user=self.user)
 
     def _get_total_quantity(self):
         "return total quantity for user"
