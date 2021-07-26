@@ -1,6 +1,8 @@
 
 import datetime, random, os, json
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.cache import cache_page
+
 from mainapp.models import ProductCategory, Product
 # from basketapp.models import Basket
 
@@ -61,6 +63,7 @@ def main(request):
     return render(request, 'mainapp/index.html', content)
     
 
+@cache_page(3600)
 def products(request, pk=None, page=1):   
     title = 'продукты'
     # links_menu = ProductCategory.objects.filter(is_active=True)
