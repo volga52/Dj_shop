@@ -23,3 +23,21 @@ class UserManagementTestCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/auth/login/')
         self.assertEqual(response.status_code, self.status_code_redirect)
+
+    def test_user_logout(self):
+        # данные пользователя
+        self.client.login(username=self.username, password=self.password)
+
+        # логинимся
+        response = self.client.get('/auth/login/')
+        self.assertEqual(response.status_code, self.status_code_redirect)
+        self.assertFalse(response.context['user'].is_anonymous)
+
+        # выходим из системы
+        response = self.client.get('/auth/logout/')
+        self.assertEqual(response.status_code, self.status_code_redirect)
+
+        # главная после выхода
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, self.status_code_success)
+        self.assertTrue(response.context['user'].is_anonymous)
