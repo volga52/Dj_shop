@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db.models import F
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -155,7 +156,8 @@ def forming_complete(request, pk):
 @receiver(pre_save, sender=Basket)
 def products_quantity_update_save(sender, update_fields, instance, **kwargs):
     if instance.pk:
-        instance.product.quantity -= instance.quantity - sender.get_item(instance.pk).quantity
+        # instance.product.quantity -= instance.quantity - sender.get_item(instance.pk).quantity
+        instance.product.quantity = F('quantity') - (instance.quantity - sender.get_item(instance.pk).quantity)
     else:
         instance.product.quantity -= instance.quantity
     instance.product.save()
@@ -164,7 +166,8 @@ def products_quantity_update_save(sender, update_fields, instance, **kwargs):
 @receiver(pre_delete, sender=OrderItem)
 @receiver(pre_delete, sender=Basket)
 def product_quantity_update_delete(sender, instance, **kwargs):
-    instance.product.quantity += instance.quantity
+    # instance.product.quantity += instance.quantity
+    instance.product.quantity = F('quantity') + instance.quantity
     instance.product.save()
 
 
