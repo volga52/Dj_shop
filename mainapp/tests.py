@@ -1,3 +1,4 @@
+from django.core.management import call_command
 from django.test import TestCase
 from django.test.client import Client
 
@@ -19,3 +20,22 @@ class TestMainSmokeTest(TestCase):
         response = self.client.get('/')
         self.assertEqual(response.status_code, self.status_cod_success)
 
+        response = self.client.get('/contact/')
+        self.assertEqual(response.status_code, self.status_cod_success)
+
+        response = self.client.get('/products/')
+        self.assertEqual(response.status_code, self.status_cod_success)
+
+        response = self.client.get('/products/category/0/')
+        self.assertEqual(response.status_code, self.status_cod_success)
+
+        for category in ProductCategory.objects.all():
+            response = self.client.get(f'/products/category/{category.pk}/')
+            self.assertEqual(response.status_code, self.status_cod_success)
+
+        for product in Product.objects.all():
+            response = self.client.get(f'/products/product/{product.pk}/')
+            self.assertEqual(response.status_code, self.status_cod_success)
+
+    def tearDown(self):
+        call_command('sqlsequencereset', 'mainapp', 'authapp', 'ordersapp', 'basketapp')
