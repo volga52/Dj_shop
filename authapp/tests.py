@@ -1,8 +1,8 @@
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 
 from authapp.models import ShopUser
-
 
 class UserManagementTestCase(TestCase):
     username = 'django'
@@ -10,6 +10,16 @@ class UserManagementTestCase(TestCase):
     password = 'geekbrains'
     status_code_success = 200
     status_code_redirect = 302
+
+    new_user_data = {
+        'username': 'user01',
+        'first_name': 'user',
+        'last_name': 'Uuser',
+        'password1': 'geekbrains',
+        'password2': 'geekbrains',
+        'age': 33,
+        'email': 'user1@gb.local'
+    }
 
     def setUp(self):
         self.user = ShopUser.objects.create_superuser('django', email=self.email, password=self.password)
@@ -42,3 +52,17 @@ class UserManagementTestCase(TestCase):
         response = self.client.get('/')
         self.assertEqual(response.status_code, self.status_code_success)
         self.assertTrue(response.context['user'].is_anonymous)
+
+    def test_user_register(self):
+        response = self.client.post('/auth/register/', data=self.new_user_data)
+        self.assertEqual(response.status_code, self.status_code_redirect)
+
+        new_user = ShopUser.objects.get(username=self.new_user_data['username'])
+
+        activation_url = f'{settings.DOMAIN_NAME}/auth/verify/{new_user.email}/{new_user.activation_key}/'
+
+        response = self.client.get(activation_url)
+        self.assertEqual(response.status_code, self.status_code_success)
+
+        new_user.refresh_from_db()
+        self.assertTrue(new_user.is_active)
