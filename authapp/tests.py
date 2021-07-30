@@ -4,6 +4,7 @@ from django.test.client import Client
 
 from authapp.models import ShopUser
 
+
 class UserManagementTestCase(TestCase):
     username = 'django'
     email = 'django@gb.local'
@@ -66,3 +67,18 @@ class UserManagementTestCase(TestCase):
 
         new_user.refresh_from_db()
         self.assertTrue(new_user.is_active)
+
+    def test_basket_login_redirect(self):
+        # без логина должен переадресовать
+        response = self.client.get('/basket/')
+        self.assertEqual(response.url, '/auth/login/?next=/basket/')
+        self.assertEqual(response.status_code, self.status_code_redirect)
+
+        # с логином все должно быть хорошо
+        self.client.login(username=self.username, password=self.password)
+
+        response = self.client.get('/basket/')
+        self.assertEqual(response.status_code, self.status_code_success)
+        self.assertEqual(list(response.context['basket']), [])
+        self.assertEqual(response.request['PATH_INFO'], '/basket/')
+        self.assertIn('Ваша корзина, Пользователь', response.content.decode())
