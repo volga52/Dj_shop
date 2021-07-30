@@ -8,8 +8,8 @@ class TestMainSmokeTest(TestCase):
     status_cod_success = 200
 
     def setUp(self):
-        cat_1 = ProductCategory.object.create(name='cat_1')
-        Product.object.create(
+        cat_1 = ProductCategory.objects.create(name='cat_1')
+        Product.objects.create(
             category=cat_1,
             name='prod 1',
         )
